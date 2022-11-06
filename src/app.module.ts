@@ -1,3 +1,5 @@
+import './environments'
+
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -9,9 +11,12 @@ import { Schema } from 'mongoose'
 import * as AutoIncrementFactory from 'mongoose-sequence'
 import { snakeCase } from 'lodash'
 import { AnyClass } from '@casl/ability/dist/types/types'
-
-import './environments'
 import { HelperService } from '@modules/helper/helper.service'
+import { JwtStrategy } from '@modules/auth/jwt.auth'
+import { AuthService } from '@modules/auth/auth.service'
+import { PassportModule } from '@nestjs/passport'
+import { JwtModule } from '@nestjs/jwt'
+import { jwtConstants } from './constant/jwtConstants'
 
 interface IModelSchema {
   model: AnyClass
@@ -43,8 +48,13 @@ const modelSchemas: IModelSchema[] = [
         inject: [getConnectionToken()],
       })),
     ),
+    PassportModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   controllers: [AppController, UsersController],
-  providers: [AppService, UserService, HelperService],
+  providers: [AppService, UserService, HelperService, AuthService, JwtStrategy],
 })
 export class AppModule {}
