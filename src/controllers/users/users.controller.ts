@@ -19,6 +19,13 @@ import {
   SimpleUserDto,
   UpdateProfileUserDto,
 } from 'src/dto/user.dto'
+import * as fs from 'fs'
+import * as path from 'path'
+
+// import { Contract, ethers, providers } from 'ethers'
+
+const { ethers } = require('hardhat')
+const solc = require('solc')
 
 @Controller('users')
 export class UsersController {
@@ -71,5 +78,38 @@ export class UsersController {
     return {
       accessToken: accessToken,
     }
+  }
+
+  @Post('createCollection')
+  async createCollection(@Body() payload: any) {
+    const name = payload.name
+    const symbol = payload.symbol
+    console.log(name, symbol)
+
+    const sourceCode = fs.readFileSync('contracts/NFT.sol').toString()
+
+    function findImports(relativePath) {
+      const absolutePath = path.resolve('', 'node_modules', relativePath)
+      const source = fs.readFileSync(absolutePath, 'utf8')
+      return { contents: source }
+    }
+
+    const input = {
+      language: 'Solidity',
+      sources: { 'NFT.sol': { content: sourceCode } },
+      settings: { outputSelection: { '*': { '*': ['*'] } } },
+    }
+    const output = JSON.parse(
+      solc.compile(JSON.stringify(input), { import: findImports }),
+    )
+    console.log(sourceCode)
+
+    const contractABI = output.contracts['NFT.sol']['NFT'].abi
+    const byteCode = output.contracts['NFT.sol']['NFT'].evm['bytecode'].object
+
+    const res = {}
+    res['abi'] = contractABI
+    res['byteCode'] = byteCode
+    return res
   }
 }

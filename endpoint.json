@@ -1,0 +1,42 @@
+{
+  "user": [
+    {
+      "method": "get",
+      "endpoint": "/users/me"
+    },
+    {
+      "method": "put",
+      "endpoint": "/users",
+      "body": {
+        "username": "0x0",
+        "avatar": "link",
+        "banner": "link"
+      }
+    },
+    {
+      "method": "get",
+      "requiredToken": false,
+      "endpoint": "/users/nonce/:address"
+    },
+    {
+      "method": "post",
+      "requiredToken": false,
+      "endpoint": "/users/verifySignature",
+      "body": {
+        "address": "0x0",
+        "signature": "0x0"
+      }
+    }
+  ],
+  "nfts": [
+    {
+      "method": "get",
+      "requiredToken": false,
+      "endpoint": "/nftsMeta",
+      "body": {
+        "address": "0x0",
+        "signature": "0x0"
+      }
+    }
+  ]
+}
